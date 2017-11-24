@@ -5,4 +5,6 @@ require 'discretion/errors'
 require 'discretion/helpers'
 require 'discretion/middleware'
 require 'discretion/railtie'
-require "discretion/version"
+require 'discretion/version'
+
+ActiveRecord::Base.send(:include, Discretion::Meta) if defined?(ActiveRecord)
