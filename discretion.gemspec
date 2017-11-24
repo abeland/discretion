@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/abeland/discretion'
   spec.license       = 'MIT'
 
-  spec.add_dependency 'rails', '~>5.0'
+  spec.add_dependency 'rails', '~>5'
   spec.add_dependency 'request_store', '~>1.3'
   spec.required_ruby_version = '>= 2.2.2'
 
