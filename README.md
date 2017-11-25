@@ -147,7 +147,7 @@ Again, if you use [Clearance](https://github.com/thoughtbot/clearance), you shou
 
 ### But what about roles and such?
 
-Discretion's scope is focused and limited to privacy/authorization. It's a **non-goal** of this project to handle enumeration or roles or permissions or ACLs on actual objects with respect to other objects. There are other gems which do this well. I personally like [Rolify](https://github.com/RolifyCommunity/rolify), and Rolify can be used with Discretion in very nifty ways. Continuing our non-profit organization example, we can use Rolify to create an `admin` role for Staff members, and allow admins of the organization as well as recipients of a donation to edit `Doantion`s:
+Discretion's scope is focused and limited to privacy/authorization. It's a **non-goal** of this project to handle enumeration of roles or permissions or ACLs on actual objects with respect to other objects. There are other gems which do this well. I personally like [Rolify](https://github.com/RolifyCommunity/rolify), and Rolify can be used with Discretion in very nifty ways. Continuing our non-profit organization example, we can use Rolify to create an `admin` role for Staff members, and allow admins of the organization as well as recipients of a donation to edit `Doantion`s:
 
 ```ruby
 class Donation < ApplicationRecord
