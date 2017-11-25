@@ -9,15 +9,11 @@ module Discretion
     end
 
     def can_see_models?(viewer, *models)
-      models.all? do |model|
-        Discretion.can_see_model?(viewer, model)
-      end
+      models.all? { |model| Discretion.can_see_record?(viewer, model) }
     end
 
     def can_write_models?(viewer, *models)
-      models.all? do |model|
-        Discretion.can_write_model?(viewer, model)
-      end
+      models.all? { |model| Discretion.can_write_record?(viewer, model) }
     end
   end
 end
