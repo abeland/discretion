@@ -8,12 +8,12 @@ module Discretion
       Rails.env.test?
     end
 
-    def can_see_models?(viewer, *models)
-      models.all? { |model| Discretion.can_see_record?(viewer, model) }
+    def can_see_records?(viewer, *records)
+      records.all? { |record| Discretion.can_see_record?(viewer, record) }
     end
 
-    def can_write_models?(viewer, *models)
-      models.all? { |model| Discretion.can_write_record?(viewer, model) }
+    def can_write_records?(viewer, *records)
+      records.all? { |record| Discretion.can_write_record?(viewer, record) }
     end
   end
 end
