@@ -23,7 +23,7 @@ Or install it yourself as:
 
 ### High Level Idea
 
-The idea is simple: we colocate the read and write policies with the model definitions themselves by defining `can_see?(viewer)` and optionally `can_write?(viewer)`. The semantics are straightforward: given a `viewer` (user -- more on this below), can that viewer see the record encapsulated by the model class?
+The idea is simple: we colocate the read and write policies with the model definitions themselves by defining `can_see?(viewer)` and optionally `can_write?(viewer)`. The semantics are straightforward: given a `viewer` (typically a `User` but can be anything you want -- more on this below), can that viewer see the record encapsulated by the model class?
 
 For example, let's say we have a web app for a large non-profit organization which has staff who have to raise money from donors. So we might have models like `Donor`, `Staff`, and `Donation`s. Below we will describe how we would set up authorization/privacy policies for these models using Discretion.
 
