@@ -29,7 +29,7 @@ For example, let's say we have a web app for a large non-profit organization whi
 
 ### Opt-In
 
-Discretion uses an Opt-In strategy: you must tell discretion which models should use discretion. To do this, you can use the `be_discreet` or `use_discretion` directives in your model definition. When you do this, you **must** then define a `can_see?(viewer)` method. It can have any visibility (private, protected, or public). So, continuing with our running example of a non-profit organization with `Donor`s, `Staff`, and `Donation`s, we might start with some basic privacy policies like this:
+Discretion uses an Opt-In strategy: you must tell discretion which models should use discretion. To do this, you use the `use_discretion` directive in your model definition. When you do this, you **must** then define a `can_see?(viewer)` method. It can have any visibility (private, protected, or public). So, continuing with our running example of a non-profit organization with `Donor`s, `Staff`, and `Donation`s, we might start with some basic privacy policies like this:
 
 ```ruby
 class Staff < ApplicationRecord
@@ -47,7 +47,7 @@ class Staff < ApplicationRecord
 
 ```ruby
 class Donor < ApplicationRecord
-  be_discreet
+  use_discretion
   
   ...
   
