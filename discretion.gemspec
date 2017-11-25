@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Abe Land']
   spec.email         = ['codeclimbcoffee@gmail.com']
 
-  spec.summary       = 'A simple authorization framework for Rails projects.'
+  spec.summary       = 'A simple privacy/authorization framework for Rails projects.'
   spec.description   = spec.summary
   spec.homepage      = 'https://github.com/abeland/discretion'
   spec.license       = 'MIT'
