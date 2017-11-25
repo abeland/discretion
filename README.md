@@ -145,7 +145,32 @@ end
 
 Again, if you use [Clearance](https://github.com/thoughtbot/clearance), you shouldn't have to do anything and `current_viewer` will be set from the `env[:clearance].current_user` value (exposed by Clearance's middleware) in Discretion's middleware.
 
-### Usage
+### But what about roles and such?
+
+Discretion's scope is focused and limited to privacy/authorization. It's a **non-goal** of this project to handle enumeration or roles or permissions or ACLs on actual objects with respect to other objects. There are other gems which do this well. I personally like [Rolify](https://github.com/RolifyCommunity/rolify), and Rolify can be used with Discretion in very nifty ways. Continuing our non-profit organization example, we can use Rolify to create an `admin` role for Staff members, and allow admins of the organization as well as recipients of a donation to edit `Doantion`s:
+
+```ruby
+class Donation < ApplicationRecord
+  use_discretion
+  
+  belongs_to :donor
+  belongs_to :recipient, class_name: 'Staff', foreign_key: 'staff_id'
+  
+  ...
+  
+  def can_see?(viewer)
+    # Only the Donor for the donation or the Staff recipient of the donation can see the Donation.
+    viewer == donor || viewer == recipient || viewer.has_role?(:admin, self) # <- rolify in third disjunct
+  end
+  
+  def can_write?(viewer)
+    # Only the recipient can edit the donation.
+    viewer == recipient || viewer.has_role?(:admin, self) # <- rolify in second disjunct
+  end
+end
+```
+
+### Querying for and writing records
 
 Discretion is totally opaque and should not require any changes in how you query for or write records. That is, you can just query for things normally using `find`, `where`, `limit`, etc. You can also `create`/`update`/`destroy`/`delete` records as you normally would, and Discretion will check your `can_see?` and `can_write?` policies for all of these actions.
 
