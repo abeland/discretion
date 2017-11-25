@@ -1,7 +1,7 @@
 module Discretion
   class << self
     def in_console?
-      defined?(Rails::Console)
+      defined?(Rails::Console).present?
     end
 
     def in_test?
