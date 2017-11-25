@@ -150,9 +150,16 @@ Again, if you use [Clearance](https://github.com/thoughtbot/clearance), you shou
 Discretion's scope is focused and limited to privacy/authorization. It's a **non-goal** of this project to handle enumeration of roles or permissions or ACLs on actual objects with respect to other objects. There are other gems which do this well. I personally like [Rolify](https://github.com/RolifyCommunity/rolify), and Rolify can be used with Discretion in very nifty ways. Continuing our non-profit organization example, we can use Rolify to create an `admin` role for Staff members, and allow admins of the organization as well as recipients of a donation to edit `Doantion`s:
 
 ```ruby
+class Organization < ApplicationRecord
+  has_many :donations
+end
+
+...
+
 class Donation < ApplicationRecord
   use_discretion
   
+  belongs_to :organization
   belongs_to :donor
   belongs_to :recipient, class_name: 'Staff', foreign_key: 'staff_id'
   
@@ -160,12 +167,12 @@ class Donation < ApplicationRecord
   
   def can_see?(viewer)
     # Only the Donor for the donation or the Staff recipient of the donation can see the Donation.
-    viewer == donor || viewer == recipient || viewer.has_role?(:admin, self) # <- rolify in third disjunct
+    viewer == donor || viewer == recipient || viewer.has_role?(:admin, organization) # <- rolify in third disjunct
   end
   
   def can_write?(viewer)
     # Only the recipient can edit the donation.
-    viewer == recipient || viewer.has_role?(:admin, self) # <- rolify in second disjunct
+    viewer == recipient || viewer.has_role?(:admin, organization) # <- rolify in second disjunct
   end
 end
 ```
