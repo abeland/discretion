@@ -8,7 +8,7 @@ module Discretion
       end
 
       before_save do |record|
-        raise Discretion::CannotSeeError unless Discretion.current_viewer_can_write_record?(record)
+        raise Discretion::CannotWriteError unless Discretion.current_viewer_can_write_record?(record)
       end
     end
   end
