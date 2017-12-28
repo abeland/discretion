@@ -1,3 +1,5 @@
+require 'rails'
+
 module Discretion
   class Railtie < ::Rails::Railtie
     initializer 'discretion.insert_middleware' do |app|
