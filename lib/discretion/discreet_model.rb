@@ -10,7 +10,9 @@ module Discretion
       end
 
       before_save do |record|
-        raise Discretion::CannotWriteError unless Discretion.current_viewer_can_write_record?(record)
+        unless Discretion.current_viewer_can_write_record?(record, changes, new_record?)
+          raise Discretion::CannotWriteError
+        end
       end
     end
   end

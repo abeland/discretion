@@ -10,16 +10,16 @@ module Discretion
       can_see_record?(Discretion.current_viewer, record)
     end
 
-    def can_write_record?(viewer, record)
+    def can_write_record?(viewer, record, changes, new_record)
       return true unless record.is_a?(Discretion::DiscreetModel)
 
       record.respond_to?(:can_write?, true) ?
-        record.send(:can_write?, viewer) :
+        record.send(:can_write?, viewer, changes, new_record) :
         can_see_record?(viewer, record)
     end
 
-    def current_viewer_can_write_record?(record)
-      can_write_record?(Discretion.current_viewer, record)
+    def current_viewer_can_write_record?(record, changes, new_record)
+      can_write_record?(Discretion.current_viewer, record, changes, new_record)
     end
   end
 end

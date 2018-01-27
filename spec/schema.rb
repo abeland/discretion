@@ -19,6 +19,8 @@ ActiveRecord::Schema.define do
     t.decimal :amount, precision: 20, scale: 2, null: false
     t.references :donor, null: false
     t.references :staff, null: false
+    t.string :donor_note
+    t.string :recipient_note
     t.timestamps null: false
   end
 end
