@@ -14,9 +14,7 @@ RSpec.describe Discretion do
     let(:staff2) { Staff.create!(name: 'Paul of Tarsus') }
     let(:donor1) { Donor.create!(name: 'Justin Martyr') }
     let(:donor2) { Donor.create!(name: 'John Calvin') }
-    let (:donation1) do
-      Donation.create!(donor: donor1, recipient: staff1, amount: 100.00)
-    end
+    let(:donation1) { Donation.create!(donor: donor1, recipient: staff1, amount: 100.00) }
 
     context 'viewing' do
 
@@ -31,12 +29,6 @@ RSpec.describe Discretion do
           Discretion.set_current_viewer(staff1)
           pretend_not_in_test
           expect(staff2).not_to be nil
-        end
-
-        it 'should not be allowed for a donor' do
-          Discretion.set_current_viewer(donor1)
-          pretend_not_in_test
-          expect { staff1 }.to raise_error(Discretion::CannotSeeError)
         end
       end
 
@@ -82,11 +74,11 @@ RSpec.describe Discretion do
           expect(donation1).not_to be nil
         end
 
-        it 'should not be allowed for other staff' do
+        it 'should be allowed for other staff' do
           donation1
           Discretion.set_current_viewer(staff2)
           pretend_not_in_test
-          expect { donation1.reload }.to raise_error(Discretion::CannotSeeError)
+          expect(donation1.reload).not_to be nil
         end
 
         it 'should not be allowed for other donors' do
@@ -98,27 +90,56 @@ RSpec.describe Discretion do
       end
     end
 
-    context 'writing' do
+    context 'creating' do
       context 'donations' do
-        it 'should be allowed by staff recipient' do
-          Discretion.set_current_viewer(staff1)
-          pretend_not_in_test
-          expect(donation1).not_to be nil
-        end
-
-        it 'should not be allowed by another staff' do
+        it 'should only be allowed by the donor or recipient' do
           Discretion.set_current_viewer(staff2)
           pretend_not_in_test
           expect { donation1 }.to raise_error(Discretion::CannotWriteError)
         end
 
-        it 'should not be allowed by a donor' do
-          donation1
+        it 'should be allowed by donor' do
           Discretion.set_current_viewer(donor1)
           pretend_not_in_test
-          expect {
-            donation1.update!(amount: donation1.amount + 1.00)
-          }.to raise_error(Discretion::CannotWriteError)
+          expect(donation1).not_to be nil
+        end
+
+        it 'should be allowed by recipient' do
+          Discretion.set_current_viewer(staff1)
+          pretend_not_in_test
+          expect(donation1).not_to be nil
+        end
+      end
+    end
+
+    context 'editing' do
+      context 'donations' do
+        it 'should be allowed if donor is editing the donor_note' do
+          Discretion.set_current_viewer(donor1)
+          donation1
+          pretend_not_in_test
+          expect(donation1.update(donor_note: 'Hello!')).to be true
+        end
+
+        it 'should be allowed if donor is editing the amount' do
+          Discretion.set_current_viewer(donor1)
+          donation1
+          pretend_not_in_test
+          expect(donation1.update(amount: donation1.amount + 1.0)).to be true
+        end
+
+        it 'should be allowed if recipient is editing the recipient_note' do
+          Discretion.set_current_viewer(staff1)
+          donation1
+          pretend_not_in_test
+          expect(donation1.update(recipient_note: 'Thanks!')).to be true
+        end
+
+        it 'should not be allowed if staff is trying to edit the donor_note.' do
+          Discretion.set_current_viewer(staff1)
+          donation1
+          pretend_not_in_test
+          expect { donation1.update(donor_note: 'Hmmm') }.to raise_error(Discretion::CannotWriteError)
         end
       end
     end

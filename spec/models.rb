@@ -16,8 +16,8 @@ class Staff < ApplicationRecord
   def can_see?(viewer)
     return true if Discretion.in_test?
 
-    # Only Staff of the organization can see Staff members.
-    viewer.is_a?(Staff)
+    # Everyone can see Staff as long as they're logged-in.
+    viewer.present?
   end
 end
 
@@ -47,15 +47,34 @@ class Donation < ApplicationRecord
   def can_see?(viewer)
     return true if Discretion.in_test?
 
-    # Only the Donor for the donation or the Staff recipient
-    # of the donation can see the Donation.
-    viewer&.id == donor.id || viewer&.id == recipient.id
+    # Only the donor or any Staff can see donations.
+    (viewer&.is_a?(Donor) && viewer&.id == donor.id) || viewer&.is_a?(Staff)
   end
 
-  def can_write?(viewer)
+  def can_write?(viewer, changes, new_record)
     return true if Discretion.in_test?
 
-    # Only the recipient can edit existing donations.
-    viewer&.id == recipient.id
+    # The recipient or the donor can create the donation.
+    if new_record
+      return (viewer&.is_a?(Donor) && viewer&.id == donor.id) ||
+        (viewer&.is_a?(Staff) && viewer&.id == recipient.id)
+    end
+
+    # Only the donor can edit the donor_note.
+    if changes.include?(:donor_note)
+      return false unless viewer&.is_a?(Donor) && viewer&.id == donor.id
+    end
+
+    # Only the recipient can edit the recipient_note.
+    if changes.include?(:recipient_note)
+      return false unless viewer&.is_a?(Staff) && viewer&.id == recipient.id
+    end
+
+    # The amount can only be changes by the donor.
+    if changes.include?(:amount)
+      return false unless viewer&.is_a?(Donor) && viewer&.id == donor.id
+    end
+
+    can_see?(viewer)
   end
 end
