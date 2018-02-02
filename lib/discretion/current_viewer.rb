@@ -1,4 +1,7 @@
 module Discretion
+  OMNISCIENT_VIEWER = :__discretion_omnisient_viewer_val
+  OMNIPOTENT_VIEWER = :__discretion_omnipotent_viewer_val
+
   class << self
     CURRENT_VIEWER_KEY = :__discretion_current_viewer
 
