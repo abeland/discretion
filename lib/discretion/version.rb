@@ -1,3 +1,3 @@
 module Discretion
-  VERSION = '0.4.0.pre.alpha'.freeze
+  VERSION = '1.0.0.pre.alpha'.freeze
 end
