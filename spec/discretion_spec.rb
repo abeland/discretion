@@ -46,9 +46,11 @@ RSpec.describe Discretion do
           pretend_not_in_test
           expect { staff1.reload }.to raise_error(Discretion::CannotSeeError)
           expect(Discretion.try_to(nil) { staff1.reload }).to be false
+          expect(Discretion.try_to(staff1) { staff1.reload }).to be true
 
           expect { staff1.update!(name: 'foobar') }.to raise_error(Discretion::CannotWriteError)
           expect(Discretion.try_to(nil) { staff1.update!(name: 'foobar') }).to be false
+          expect(Discretion.try_to(staff1) { staff1.update!(name: 'foobar') }).to be true
         end
       end
 
