@@ -39,6 +39,19 @@ RSpec.describe Discretion do
     end
 
     context 'viewing' do
+      context 'via helpers' do
+        it 'should work without throwing' do
+          staff1
+          Discretion.set_current_viewer(nil)
+          pretend_not_in_test
+          expect { staff1.reload }.to raise_error(Discretion::CannotSeeError)
+          expect(Discretion.try_to(nil) { staff1.reload }).to be false
+
+          expect { staff1.update!(name: 'foobar') }.to raise_error(Discretion::CannotWriteError)
+          expect(Discretion.try_to(nil) { staff1.update!(name: 'foobar') }).to be false
+        end
+      end
+
       context 'staff' do
         it 'should be allowed for staff himself' do
           Discretion.set_current_viewer(staff1)
