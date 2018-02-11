@@ -8,8 +8,11 @@ module Discretion
       Rails.env.test?
     end
 
-    def can_see_records?(viewer, *records)
-      records.all? { |record| Discretion.can_see_record?(viewer, record) }
+    def try_to(viewer)
+      yield
+      true
+    rescue Discretion::CannotSeeError, Discretion::CannotWriteError
+      false
     end
 
     def omnisciently
