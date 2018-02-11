@@ -9,10 +9,14 @@ module Discretion
     end
 
     def try_to(viewer)
+      orig_viewer = Discretion.current_viewer
+      Discretion.set_current_viewer(viewer)
       yield
       true
     rescue Discretion::CannotSeeError, Discretion::CannotWriteError
       false
+    ensure
+      Discretion.set_current_viewer(orig_viewer)
     end
 
     def omnisciently
