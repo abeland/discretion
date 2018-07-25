@@ -21,9 +21,11 @@ RSpec.describe Discretion do
         it 'should correctly set viewer during and after' do
           Discretion.set_current_viewer(staff1)
           Discretion.omnisciently do
-            expect(Discretion.current_viewer).to eq(Discretion::OMNISCIENT_VIEWER)
+            expect(Discretion.current_viewer).to eq(staff1)
+            expect(Discretion.currently_acting_as).to eq(Discretion::OMNISCIENT_VIEWER)
           end
           expect(Discretion.current_viewer).to eq(staff1)
+          expect(Discretion.currently_acting_as).to be nil
         end
       end
 
@@ -31,9 +33,11 @@ RSpec.describe Discretion do
         it 'should correctly set viewer during and after' do
           Discretion.set_current_viewer(staff1)
           Discretion.omnipotently do
-            expect(Discretion.current_viewer).to eq(Discretion::OMNIPOTENT_VIEWER)
+            expect(Discretion.current_viewer).to eq(staff1)
+            expect(Discretion.currently_acting_as).to eq(Discretion::OMNIPOTENT_VIEWER)
           end
           expect(Discretion.current_viewer).to eq(staff1)
+          expect(Discretion.currently_acting_as).to be nil
         end
       end
     end
