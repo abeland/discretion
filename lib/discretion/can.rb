@@ -2,7 +2,8 @@ module Discretion
   class << self
     def can_see_record?(viewer, record)
       return true unless record.is_a?(Discretion::DiscreetModel)
-      return true if Discretion::OMNISCIENT_VIEWER == viewer || Discretion::OMNIPOTENT_VIEWER == viewer
+      return true if Discretion.currently_acting_as?(Discretion::OMNISCIENT_VIEWER) ||
+                     Discretion.currently_acting_as?(Discretion::OMNIPOTENT_VIEWER)
 
       record.send(:can_see?, viewer)
     end
@@ -13,7 +14,7 @@ module Discretion
 
     def can_write_record?(viewer, record, changes, new_record)
       return true unless record.is_a?(Discretion::DiscreetModel)
-      return true if Discretion::OMNIPOTENT_VIEWER == viewer
+      return true if Discretion.currently_acting_as?(Discretion::OMNIPOTENT_VIEWER)
 
       record.respond_to?(:can_write?, true) ?
         record.send(:can_write?, viewer, changes, new_record) :
