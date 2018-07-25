@@ -207,6 +207,121 @@ RSpec.describe Discretion do
       end
     end
 
+    context 'destroying' do
+      context 'donations' do
+        it 'should be allowed in test' do
+          Discretion.set_current_viewer(nil)
+          donation1
+          donation1.destroy!
+          expect(donation1.destroyed?).to be true
+        end
+
+        it 'should not be allowed when not in test' do
+          Discretion.set_current_viewer(nil)
+          donation1
+          pretend_not_in_test
+          expect { donation1.destroy! }.to raise_error(Discretion::CannotDestroyError)
+        end
+
+        context 'omnisciently' do
+          it 'should not be allowed' do
+            Discretion.set_current_viewer(nil)
+            donation1
+            pretend_not_in_test
+            expect {
+              Discretion.omnisciently do
+                donation1.destroy!
+              end
+            }.to raise_error(Discretion::CannotDestroyError)
+          end
+        end
+
+        context 'omnipotently' do
+          it 'should be allowed' do
+            Discretion.set_current_viewer(nil)
+            donation1
+            pretend_not_in_test
+            Discretion.omnipotently do
+              donation1.destroy!
+              expect(donation1.destroyed?).to be true
+            end
+          end
+        end
+      end
+
+      context 'staff' do
+        it 'should be allowed in test' do
+          Discretion.set_current_viewer(nil)
+          staff1
+          staff1.destroy!
+          expect(staff1.destroyed?).to be true
+        end
+
+        it 'should not be allowed without a viewer' do
+          Discretion.set_current_viewer(nil)
+          staff1
+          pretend_not_in_test
+          expect { staff1.destroy }.to raise_error(Discretion::CannotDestroyError)
+        end
+
+        it 'should not be allowed by the staff themselves' do
+          Discretion.set_current_viewer(staff1)
+          pretend_not_in_test
+          expect { staff1.destroy }.to raise_error(Discretion::CannotDestroyError)
+        end
+
+        it 'should not be allowed by other staff' do
+          Discretion.set_current_viewer(staff2)
+          staff1
+          pretend_not_in_test
+          expect { staff1.destroy }.to raise_error(Discretion::CannotDestroyError)
+        end
+
+        it 'should not be allowed by donors' do
+          Discretion.set_current_viewer(donor1)
+          staff1
+          pretend_not_in_test
+          expect { staff1.destroy }.to raise_error(Discretion::CannotDestroyError)
+        end
+      end
+
+      context 'donors' do
+        it 'should be allowed in test' do
+          Discretion.set_current_viewer(nil)
+          donor1
+          donor1.destroy!
+          expect(donor1.destroyed?).to be true
+        end
+
+        it 'should not be allowed without a viewer' do
+          Discretion.set_current_viewer(nil)
+          donor1
+          pretend_not_in_test
+          expect { donor1.destroy }.to raise_error(Discretion::CannotDestroyError)
+        end
+
+        it 'should not be allowed by a staff' do
+          Discretion.set_current_viewer(staff1)
+          pretend_not_in_test
+          donor1
+          expect { donor1.destroy }.to raise_error(Discretion::CannotDestroyError)
+        end
+
+        it 'should not be allowed by another donor' do
+          Discretion.set_current_viewer(donor2)
+          donor1
+          pretend_not_in_test
+          expect { donor1.destroy }.to raise_error(Discretion::CannotDestroyError)
+        end
+
+        it 'should be allowed by the donor themselves' do
+          Discretion.set_current_viewer(donor1)
+          donor1.destroy!
+          expect(donor1.destroyed?).to be true
+        end
+      end
+    end
+
     context 'editing' do
       context 'donations' do
         it 'should be allowed if donor is editing the donor_note' do

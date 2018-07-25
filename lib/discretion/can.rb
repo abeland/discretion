@@ -24,5 +24,17 @@ module Discretion
     def current_viewer_can_write_record?(record, changes, new_record)
       can_write_record?(Discretion.current_viewer, record, changes, new_record)
     end
+
+    def can_destroy_record?(viewer, record)
+      return true unless record.is_a?(Discretion::DiscreetModel)
+      return true if Discretion.currently_acting_as?(Discretion::OMNIPOTENT_VIEWER)
+
+      record.respond_to?(:can_destroy?, true) ?
+        record.send(:can_destroy?, viewer) : can_write_record?(viewer, record, {}, false)
+    end
+
+    def current_viewer_can_destroy_record?(record)
+      can_destroy_record?(Discretion.current_viewer, record)
+    end
   end
 end
