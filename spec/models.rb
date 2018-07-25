@@ -19,6 +19,21 @@ class Staff < ApplicationRecord
     # Everyone can see Staff as long as they're logged-in.
     viewer.present?
   end
+
+  def can_write?(viewer, _changes, new_record)
+    return true if new_record
+    return true if Discretion.in_test?
+
+    # Only the staff themselves should be able to write.
+    viewer.is_a?(Staff) && viewer&.id == id
+  end
+
+  def can_destroy?(_viewer)
+    return true if Discretion.in_test?
+
+    # No one can delete a Staff record.
+    false
+  end
 end
 
 class Donor < ApplicationRecord
@@ -33,6 +48,17 @@ class Donor < ApplicationRecord
 
     # Only the Donor herself or Staff of the organization can see the Donor.
     viewer.is_a?(Staff) || viewer&.id == id
+  end
+
+  def can_write?(viewer, _changes, new_record)
+    return true if Discretion.in_test?
+
+    # Only Staff can create a new Donor or, ironically, when someone
+    # is not logged-in (e.g. in sign up flow).
+    return viewer.nil? || viewer.is_a?(Staff) if new_record
+
+    # Only the donor should be able to edit their details.
+    viewer.is_a?(Donor) && viewer&.id == id
   end
 end
 
@@ -49,6 +75,14 @@ class Donation < ApplicationRecord
 
     # Only the donor or any Staff can see donations.
     (viewer&.is_a?(Donor) && viewer&.id == donor.id) || viewer&.is_a?(Staff)
+  end
+
+  def can_destroy?(viewer)
+    return true if Discretion.in_test?
+
+    # Once a donation is created, it cannot be destroyed, except maybe by a super user/admin
+    # (not implemented).
+    false
   end
 
   def can_write?(viewer, changes, new_record)
@@ -70,7 +104,7 @@ class Donation < ApplicationRecord
       return false unless viewer&.is_a?(Staff) && viewer&.id == recipient.id
     end
 
-    # The amount can only be changes by the donor.
+    # The amount can only be changed by the donor.
     if changes.include?(:amount)
       return false unless viewer&.is_a?(Donor) && viewer&.id == donor.id
     end

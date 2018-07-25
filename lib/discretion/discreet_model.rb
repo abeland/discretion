@@ -14,6 +14,12 @@ module Discretion
           raise Discretion::CannotWriteError
         end
       end
+
+      before_destroy ->(record) {
+        unless Discretion.current_viewer_can_destroy_record?(record)
+          raise Discretion::CannotDestroyError
+        end
+      }, prepend: true
     end
   end
 end
