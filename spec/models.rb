@@ -11,6 +11,11 @@ class Staff < ApplicationRecord
 
   use_discretion
 
+  # Only logged-in Staff can see Staff emails.
+  discreetly_read(:email) do |viewer, _record|
+    viewer.is_a?(Staff)
+  end
+
   private
 
   def can_see?(viewer)
@@ -41,12 +46,18 @@ class Donor < ApplicationRecord
 
   use_discretion
 
+  # Only logged-in Donors can see their own emails.
+  discreetly_read(:email) do |viewer, record|
+    viewer == record
+  end
+
   private
 
   def can_see?(viewer)
     return true if Discretion.in_test?
 
     # Only the Donor herself or Staff of the organization can see the Donor.
+
     viewer.is_a?(Staff) || viewer&.id == id
   end
 

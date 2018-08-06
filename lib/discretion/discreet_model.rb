@@ -21,5 +21,24 @@ module Discretion
         end
       }, prepend: true
     end
+
+    class_methods do
+      def discreetly_read(attribute)
+        attribute = attribute.to_sym
+
+        define_method(attribute) {
+          can_read_attr = if Discretion.currently_acting_as?(Discretion::OMNISCIENT_VIEWER) ||
+                             Discretion.currently_acting_as?(Discretion::OMNIPOTENT_VIEWER)
+                            true
+                          else
+                            yield(Discretion.current_viewer, self)
+                          end
+
+          raise Discretion::CannotSeeError unless can_read_attr
+
+          read_attribute(attribute)
+        }
+      end
+    end
   end
 end
