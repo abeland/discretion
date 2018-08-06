@@ -6,12 +6,14 @@ ActiveRecord::Schema.define do
 
   create_table :staff, force: true do |t|
     t.string :name, null: false
+    t.string :email, null: false
     t.boolean :is_admin, null: false, default: false
     t.timestamps null: false
   end
 
   create_table :donors, force: true do |t|
     t.string :name, null: false
+    t.string :email, null: false
     t.timestamps null: false
   end
 

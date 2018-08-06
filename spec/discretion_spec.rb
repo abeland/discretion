@@ -10,11 +10,11 @@ end
 
 RSpec.describe Discretion do
   context 'enforcement' do
-    let(:staff1) { Staff.create!(name: 'John Owen') }
-    let(:staff2) { Staff.create!(name: 'Paul of Tarsus') }
-    let(:donor1) { Donor.create!(name: 'Justin Martyr') }
-    let(:donor2) { Donor.create!(name: 'John Calvin') }
-    let(:donation1) { Donation.create!(donor: donor1, recipient: staff1, amount: 100.00) }
+    let(:staff1) { Discretion.omnipotently { Staff.create!(name: 'John Owen', email: 'johno@ardius.com') } }
+    let(:staff2) { Discretion.omnipotently { Staff.create!(name: 'Paul of Tarsus', email: 'paul@ardius.com') } }
+    let(:donor1) { Discretion.omnipotently { Donor.create!(name: 'Justin Martyr', email: 'justin@ardius.com') } }
+    let(:donor2) { Discretion.omnipotently { Donor.create!(name: 'John Calvin', email: 'johnc@ardius.com') } }
+    let(:donation1) { Discretion.omnipotently { Donation.create!(donor: donor1, recipient: staff1, amount: 100.00) } }
 
     context 'bypassing' do
       context 'omnisciently' do
@@ -93,7 +93,7 @@ RSpec.describe Discretion do
         it 'should not be allowed for another donor' do
           Discretion.set_current_viewer(donor2)
           pretend_not_in_test
-          expect { donor1 }.to raise_error(Discretion::CannotSeeError)
+          expect { donor1.reload }.to raise_error(Discretion::CannotSeeError)
         end
 
         it 'should be allowed for staff' do
@@ -169,7 +169,9 @@ RSpec.describe Discretion do
         it 'should only be allowed by the donor or recipient' do
           Discretion.set_current_viewer(staff2)
           pretend_not_in_test
-          expect { donation1 }.to raise_error(Discretion::CannotWriteError)
+          expect {
+            Donation.create!(donor: donor1, recipient: staff1, amount: 100.00)
+          }.to raise_error(Discretion::CannotWriteError)
         end
 
         it 'should be allowed by donor' do
@@ -190,7 +192,7 @@ RSpec.describe Discretion do
             pretend_not_in_test
             expect {
               Discretion.omnisciently do
-                donation1
+                Donation.create!(donor: donor1, recipient: staff1, amount: 100.00)
               end
             }.to raise_error(Discretion::CannotWriteError)
           end
@@ -318,6 +320,67 @@ RSpec.describe Discretion do
           Discretion.set_current_viewer(donor1)
           donor1.destroy!
           expect(donor1.destroyed?).to be true
+        end
+      end
+    end
+
+    context 'reading attributes' do
+      context 'of staff' do
+        it 'should be allowed if it is not email' do
+          Discretion.set_current_viewer(donor1)
+          pretend_not_in_test
+          name = staff1.name
+          expect(name).not_to be nil
+          expect(name).to eq(staff1.name)
+        end
+
+        it 'should be allowed if it is email if another staff is logged-in' do
+          Discretion.set_current_viewer(staff2)
+          pretend_not_in_test
+          email = staff1.email
+          expect(email).not_to be nil
+          expect(email).to eq(staff1.email)
+        end
+
+        it 'should not be allowed if it is email if a donor is logged-in' do
+          Discretion.set_current_viewer(donor1)
+          pretend_not_in_test
+          staff1
+          expect(staff1).not_to be nil
+          expect(staff1.name).not_to be nil
+          expect { staff1.email }.to raise_error(Discretion::CannotSeeError)
+        end
+      end
+
+      context 'of donors' do
+        it 'should be allowed if it is not email' do
+          Discretion.set_current_viewer(staff1)
+          pretend_not_in_test
+          name = donor1.name
+          expect(name).not_to be nil
+          expect(name).to eq(donor1.name)
+        end
+
+        it 'should not be allowed if it is email and another donor is logged-in' do
+          donor2
+          Discretion.set_current_viewer(donor1)
+          pretend_not_in_test
+          expect { donor2.email }.to raise_error(Discretion::CannotSeeError)
+        end
+
+        it 'should not be allowed if it is email and a staff is logged-in' do
+          donor2
+          Discretion.set_current_viewer(staff1)
+          pretend_not_in_test
+          expect { donor2.email }.to raise_error(Discretion::CannotSeeError)
+        end
+
+        it 'should be allowed if it is email the donor is logged-in' do
+          donor2
+          Discretion.set_current_viewer(donor2)
+          pretend_not_in_test
+          expect(donor2.email).not_to be nil
+          expect(donor2.email).to eq(donor2.email)
         end
       end
     end
