@@ -110,7 +110,7 @@ If you define `can_destroy?(viewer)` on the model class, then Discretion will us
 
 ### Per-attribute privacy
 
-This is a more advanced usage of `Discretion`, but one that you will probably need eventually as your models get more complex. For example, let's say we wanted to protect the `email`s of `Donor`s, so that a `Donor` can only see their own `email` and no one else can. We could do this like so:
+This is a more advanced usage of Discretion, but one that you will probably need eventually as your models get more complex. For example, let's say we wanted to protect the `email`s of `Donor`s, so that a `Donor` can only see their own `email` and no one else can. We could do this like so:
 
 ```ruby
   class Donor < ApplicationRecord
@@ -128,7 +128,7 @@ This is a more advanced usage of `Discretion`, but one that you will probably ne
   end
 ```
 
-Here we are saying that the `email` attribute should be readable if and only if the logged-in viewer **is** the Donor in question. This is useful e.g. when you are using GraphQL which will pluck the set of attributes requested by the client query. For exmaple, you may deem it acceptable for all `Staff` to see `Donor`s' names, but not `email`s. So if you accidentally were to query for a `Donor`'s `email` when a `Staff` is logged-in, it won't work (`Discretion` will raise the `Discretion::CannotSeeError`).
+Here we are saying that the `email` attribute should be readable if and only if the logged-in viewer **is** the Donor in question. This is useful e.g. when you are using GraphQL which will pluck the set of attributes requested by the client query. For exmaple, you may deem it acceptable for all `Staff` to see `Donor`s' names, but not `email`s. So if you accidentally were to query for a `Donor`'s `email` when a `Staff` is logged-in, it won't work (Discretion will raise the `Discretion::CannotSeeError`).
 
 ### Wait what's the `viewer` object though?
 
@@ -222,7 +222,7 @@ The first is `Discretion.omnisciently do ... end`. Omniscience is the ability to
 ```ruby
 Discretion.omnisciently do
   Donation.in_batches.each_record do |donation|
-    ... do a bunch of reads on the donation, but writes will still be protected by Discretion. ...
+    # ... do a bunch of reads on the donation, but writes will still be protected by Discretion. ...
   end
 end
 ```
@@ -232,7 +232,7 @@ The second is `Discretion.omnipotently do ... end`. Omnipotence is the ability t
 ```ruby
 Discretion.omnipotently do
   Donation.in_batches.each_reecord do |donation|
-    donation.update!(...)
+    donation.update!(...) # or even donation.destroy!
   end
 end
 ```
