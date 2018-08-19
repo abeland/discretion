@@ -1,6 +1,6 @@
 # Discretion
 
-**tldr; Discretion is a simple privacy/authorization framework for Rails projects. You define `can_see?(viewer)` methods in a model class to determine if a given viewer is allowed to view/load/read the model (record). If so, you can query and load the record as you normally would in Rails (e.g. using `find`, `where`, `limit`, ...). If not, then Discretion will throw an exception when you try to fetch the record. Something similar is done for writes (via `can_write?(viewer, changes, new_record)`) and deletions (via `can_destroy?(viewer)`).**
+**tldr; Discretion is a simple privacy/authorization framework for Rails projects. You define `can_see?(viewer)` methods in a model class to determine if a given viewer is allowed to view/load/read/destroy the model (record). If so, you can query and load the record as you normally would in Rails (e.g. using `find`, `where`, `limit`, ...). If not, then Discretion will throw an exception when you try to fetch the record. Something similar is done for writes (via `can_write?(viewer, changes, new_record)`) and deletions (via `can_destroy?(viewer)`).**
 
 ## Installation
 
